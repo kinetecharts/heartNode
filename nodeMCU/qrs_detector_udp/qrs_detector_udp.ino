@@ -24,8 +24,8 @@ extern "C" {  //required for read Vdd Voltage
 #define RAND_RES 100000000
 
 // WIFI
-const char* ssid = "kineviz_test";  //  your network SSID (name)
-const char* pass = "12345678";       // your network password
+const char* ssid = "ssid";  //  your network SSID (name)
+const char* pass = "password";       // your network password
 
 const char* serverIP="192.168.0.100"; //server to send heart beat
 unsigned int serverPort = 12351;

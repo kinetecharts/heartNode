@@ -2,4 +2,10 @@
 
 Much information is provided by Teoma Naccarato and John MacCallum. 
 
-For setup details, see instructable at
+For setup details, see instructable at.
+
+NodeMCU code is adpoted from:
+https://github.com/blakeMilner/real_time_QRS_detection
+
+which implements Pan Tompkin algorithm for filtering.
+
