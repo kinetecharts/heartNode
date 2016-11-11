@@ -3,9 +3,12 @@ var midi = require('midi')
 
 var REMOTEPORT = 12345;
 
-var LOCALHOST = '192.168.0.100';
-var LOCALPORT = 12351;
+// ============================================================
+// check localhost and localport
+var LOCALHOST = '192.168.0.101';
+var LOCALPORT = 12346;
 var MAXDEVICES = 100;
+// ==============================
 
 var output = new midi.output();
 var numPort = output.getPortCount();
@@ -29,7 +32,7 @@ server.on('listening', ()=>{
 
 
 server.on('message', (message, remote)=>{
-	// console.log(message.toString());
+	console.log(message.toString());
 
 	var clinetId = -1
 	var bpm = 0
