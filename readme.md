@@ -9,3 +9,6 @@ https://github.com/blakeMilner/real_time_QRS_detection
 
 which implements Pan Tompkin algorithm for filtering.
 
+AD8232 Heart Rate Monitor Hookup Guide
+https://learn.sparkfun.com/tutorials/ad8232-heart-rate-monitor-hookup-guide
+
