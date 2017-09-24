@@ -1,30 +1,10 @@
 var socket = io.connect(window.location.origin);
 
-socket.on('color-box', function (data) {
-  boxes[data.index].color = data.color;
-});
-
-socket.on('all-boxes', function(allboxes) {
-  for (var i = 0; i < allboxes.length; i ++) {
-    var data = allboxes[i];
-    boxes[data.index].color = data.color;
-    console.log(data);
-  }
-});
-
-socket.on('jiggle', function(data) {
- jiggleTarget = +data.jiggle;
-});
-
 var heart_d = 0
 socket.on('heart', d=>{
-	console.log(d)
+	// console.log(d)
 	heart_d = d
 })
-
-var boxes = [];
-var myColor;
-var jiggle = jiggleTarget = 0;
 
 const width = 800, height = 800
 
