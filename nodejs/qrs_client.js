@@ -23,50 +23,58 @@ var dgram = require('dgram');
 
 var message = new Buffer('My KungFu is Good!');
 
-var client = dgram.createSocket('udp4');
-var server = dgram.createSocket('udp4');
+let startUDP=function(callback){
 
-server.on('listening', ()=>{
-	var address = server.address();
-    console.log('UDP Server listening on ' + address.address + ":" + address.port);
-})
+	var udpClient = dgram.createSocket('udp4');
+	var udpServer = dgram.createSocket('udp4');
 
-let meanVal = 0;
-let val = 0;
-
-server.on('message', (message, remote)=>{
-	// console.log(message.toString());
-
-	var clinetId = -1
-	var bpm = 0
-	var msgSplit = message.toString().trim().split('#')
-	msgSplit.forEach(seg=>{
-		var k_v = seg.split(":")
-		switch(k_v[0]){
-		case "ID":
-			clinetId = parseInt(k_v[1])
-			break;
-		case "BPM":
-			bpm = k_v[1]
-			// console.log("ID:"+clinetId + " bpm:"+bpm)
-			// console.log(remote.address + "--" + remote.port)
-			output.sendMessage([144+clinetId, 64+clinetId, 90])
-			break;
-		case "VAL":
-			val = parseInt(k_v[1])
-			let newVal = Math.round(val - meanVal)
-			meanVal = meanVal * 0.95 + val * 0.05
-			let display = Math.pow(10, Math.round((newVal + 400)/40))
-			display = display < 1 ? 1 : display
-			console.log("ID:"+clinetId + " val:"+ display)
-			break;
-		default:
-		}
+	udpServer.on('listening', ()=>{
+		var address = udpServer.address();
+		console.log('UDP Server listening on ' + address.address + ":" + address.port);
 	})
-	setTimeout(()=>{
-		output.sendMessage([128+clinetId, 64+clinetId, 40])
-	}, 100)
 
-});
+	let meanVal = 0;
+	let val = 0;
 
-server.bind(LOCALPORT, LOCALHOST);
+	udpServer.on('message', (message, remote)=>{
+		// console.log(message.toString());
+
+		var clinetId = -1
+		var bpm = 0
+		var msgSplit = message.toString().trim().split('#')
+		msgSplit.forEach(seg=>{
+			var k_v = seg.split(":")
+			switch(k_v[0]){
+			case "ID":
+				clinetId = parseInt(k_v[1])
+				break;
+			case "BPM":
+				bpm = k_v[1]
+				console.log("ID:"+clinetId + " bpm:"+bpm)
+				// console.log(remote.address + "--" + remote.port)
+				// callback(bpm)
+				output.sendMessage([144+clinetId, 64+clinetId, 90])
+				break;
+			case "VAL":
+				val = parseInt(k_v[1])
+				let newVal = Math.round(val - meanVal)
+				meanVal = meanVal * 0.95 + val * 0.05
+				let display = Math.pow(10, Math.round((newVal + 400)/40))
+				display = display < 1 ? 1 : display
+				callback(val)
+				// console.log("ID:"+clinetId + " val:"+ display)
+				break;
+			default:
+			}
+		})
+
+		setTimeout(()=>{
+			output.sendMessage([128+clinetId, 64+clinetId, 40])
+		}, 100)
+
+	});
+
+	udpServer.bind(LOCALPORT, LOCALHOST);
+}
+
+module.exports = startUDP;
