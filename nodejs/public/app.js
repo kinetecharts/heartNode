@@ -2,8 +2,8 @@ var socket = io.connect(window.location.origin);
 
 var heart_d = 0
 socket.on('heart', d=>{
-	// console.log(d)
-	heart_d = d
+	console.log(d)
+	heart_d = d.val
 })
 
 const width = 800, height = 800

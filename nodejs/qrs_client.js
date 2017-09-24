@@ -39,21 +39,21 @@ let startUDP=function(callback){
 	udpServer.on('message', (message, remote)=>{
 		// console.log(message.toString());
 
-		var clinetId = -1
+		var clientId = -1
 		var bpm = 0
 		var msgSplit = message.toString().trim().split('#')
 		msgSplit.forEach(seg=>{
 			var k_v = seg.split(":")
 			switch(k_v[0]){
 			case "ID":
-				clinetId = parseInt(k_v[1])
+			clientId = parseInt(k_v[1])
 				break;
 			case "BPM":
 				bpm = k_v[1]
-				console.log("ID:"+clinetId + " bpm:"+bpm)
+				console.log("ID:"+clientId + " bpm:"+bpm)
 				// console.log(remote.address + "--" + remote.port)
 				// callback(bpm)
-				output.sendMessage([144+clinetId, 64+clinetId, 90])
+				output.sendMessage([144+clientId, 64+clientId, 90])
 				break;
 			case "VAL":
 				val = parseInt(k_v[1])
@@ -61,15 +61,15 @@ let startUDP=function(callback){
 				meanVal = meanVal * 0.95 + val * 0.05
 				let display = Math.pow(10, Math.round((newVal + 400)/40))
 				display = display < 1 ? 1 : display
-				callback(val)
-				// console.log("ID:"+clinetId + " val:"+ display)
+				callback({id: clientId, val: val})
+				// console.log("ID:"+clientId + " val:"+ display)
 				break;
 			default:
 			}
 		})
 
 		setTimeout(()=>{
-			output.sendMessage([128+clinetId, 64+clinetId, 40])
+			output.sendMessage([128+clientId, 64+clientId, 40])
 		}, 100)
 
 	});
