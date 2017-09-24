@@ -14,7 +14,7 @@ var output = new midi.output();
 var numPort = output.getPortCount();
 console.log("numPort " + numPort)
 if(numPort<1){
-	console.log("!!! Please open MIDIMock for sound")
+	console.log("!!! Please open MIDIMock or MIDIKey for sound")
 }
 output.getPortName(0)
 output.openPort(0)
