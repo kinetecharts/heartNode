@@ -12,7 +12,7 @@ extern "C" {  //required for read Vdd Voltage
   // uint16 readvdd33(void);
 }
 
-#define ID  0
+#define ID  1
 
 #define M       5
 #define N       30
@@ -203,18 +203,21 @@ void loop() {
       // read next ECG data point
 
       boolean UseSimulation = false;
+      int next_ecg_pt = 0;
       if(UseSimulation){
-        int next_ecg_pt = s_ecg[s_ecg_idx++];
+        next_ecg_pt = s_ecg[s_ecg_idx++];
         s_ecg_idx %= S_ECG_SIZE;
         QRS_detected = detect(next_ecg_pt);
       }else{
-        int next_ecg_pt = analogRead(ECG_PIN);
+        next_ecg_pt = analogRead(ECG_PIN);
         // give next data point to algorithm
         QRS_detected = detect(next_ecg_pt);
       }
 
 //      Serial.println(next_ecg_pt);
 
+      UDP_sendRaw(next_ecg_pt);
+      
       if(QRS_detected == true){
         foundTimeMicros = micros();
         
@@ -266,6 +269,20 @@ void UDP_send(float bpm){
   Udp.endPacket();
   
   Serial.println("Heatbeat sent to server");
+  Serial.println();
+  
+}
+
+void UDP_sendRaw(int val){
+  Udp.beginPacket(serverIP, serverPort);
+  Udp.write("ID:");
+  Udp.print(ID);
+  Udp.write("#VAL:");
+  Udp.print(val);
+  Udp.println();
+  Udp.endPacket();
+  
+  Serial.println("Raw Value sent to server");
   Serial.println();
   
 }
