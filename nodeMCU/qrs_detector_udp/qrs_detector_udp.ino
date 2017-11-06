@@ -12,7 +12,7 @@ extern "C" {  //required for read Vdd Voltage
   // uint16 readvdd33(void);
 }
 
-#define ID  4
+#define ID  1
 
 #define M       5
 #define N       30
@@ -29,6 +29,7 @@ const char* pass = "12345678";       // your network password
 
 //testing with election server
 const char* serverIP="192.168.0.101"; //server to send heart beat
+//const char* serverIP="192.168.3.1"; //server to send heart beat
 unsigned int serverPort = 12346; 
 
 //original, separate server
@@ -108,6 +109,7 @@ void setup() {
   // set LED to off
   digitalWrite(LED_PIN, LOW);
   digitalWrite(LIGHT_PIN, LOW);
+//  analogWrite(LIGHT_PIN, 0);
   
   Serial.begin(115200);
 //  Serial.begin(9600);
@@ -183,7 +185,8 @@ void loop() {
     // see if it's time to turn LED off    
     if((currentMicros - foundTimeMicros) > LED_ON_TIME_MICROS){
       digitalWrite(LED_PIN, HIGH);  
-      digitalWrite(LIGHT_PIN, LOW);  
+      digitalWrite(LIGHT_PIN, LOW);
+//      analogWrite(LIGHT_PIN, 0);  
     }
     
     // see if it's time to turn MOTOR off
@@ -217,6 +220,7 @@ void loop() {
 //      Serial.println(next_ecg_pt);
 
       UDP_sendRaw(next_ecg_pt);
+//      analogWrite(LIGHT_PIN, (next_ecg_pt-330) * 3);
       
       if(QRS_detected == true){
         foundTimeMicros = micros();
@@ -224,6 +228,7 @@ void loop() {
         // set the LED with the ledState of the variable:
         digitalWrite(LED_PIN, LOW);
         digitalWrite(LIGHT_PIN, HIGH);
+//        analogWrite(LIGHT_PIN, 255);
         Serial.print(delta);
         Serial.println();
         

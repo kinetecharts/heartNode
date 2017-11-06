@@ -1,5 +1,7 @@
 var __ = require('lodash')
-var midi = require('midi')
+const {playMidi, Series} =require('./playMidi')
+const BasePlayer = require('./basePlayer')
+const MelodyPlayer = require('./melodyPlayer')
 
 var REMOTEPORT = 12345;
 
@@ -11,20 +13,14 @@ var LOCALPORT = 12346;
 var MAXDEVICES = 100;
 // ==============================
 
-var output = new midi.output();
-var numPort = output.getPortCount();
-console.log("numPort " + numPort)
-if(numPort<1){
-	console.log("!!! Please open MIDIMock or MIDIKey for sound")
-}
-output.getPortName(0)
-output.openPort(0)
-
 var dgram = require('dgram');
 
 var message = new Buffer('My KungFu is Good!');
 
-let startUDP=function(callback){
+global.basePlayer = new BasePlayer(0, 72)
+global.melodyPlayer = new MelodyPlayer(2, 80)
+
+let startQRS=function(callback){
 
 	var udpClient = dgram.createSocket('udp4');
 	var udpServer = dgram.createSocket('udp4');
@@ -51,18 +47,24 @@ let startUDP=function(callback){
 				break;
 			case "BPM":
 				bpm = k_v[1]
-				console.log("ID:"+clientId + " bpm:"+bpm)
+				if(DEBUG)
+					console.log("ID:"+clientId + " bpm:"+bpm)
 				// console.log(remote.address + "--" + remote.port)
 				// callback(bpm)
 				// output.sendMessage([144+clientId, 64+clientId, 90])
-				console.log(idToScale(clientId))
 				// [channel, note, speed]
 				// 9x (144+x) note on, 8x (128+x) note off
-				let note = 6+idToScale(clientId)
-				output.sendMessage([144+clientId, note, 90])
-				setTimeout(()=>{
-					output.sendMessage([128+clientId, note, 90])
-				}, 50)
+				// playMidi(clientId-1, Root, Kind, 100, 100)
+				switch(clientId){
+					case 0:
+						basePlayer.play()
+						break
+					case 2:
+						melodyPlayer.play()
+						break
+					default:
+						playMidi(clientId-1, Root, Kind, 100, 100)
+				}
 				break;
 			case "VAL":
 				val = parseInt(k_v[1])
@@ -70,7 +72,8 @@ let startUDP=function(callback){
 				meanVal = meanVal * 0.95 + val * 0.05
 				let display = Math.pow(10, Math.round((newVal + 400)/40))
 				display = display < 1 ? 1 : display
-				callback({id: clientId, val: val})
+				if(callback)
+					callback({id: clientId, val: val})
 				// console.log(val)
 				// console.log("ID:"+clientId + " val:"+ display)
 				break;
@@ -85,18 +88,4 @@ let startUDP=function(callback){
 	udpServer.bind(LOCALPORT, LOCALHOST);
 }
 
-function idToScale(id){
-	switch(id){
-		case 0:
-			return 60
-		case 2:
-			return 64
-		case 3:
-			return 67
-		case 4:
-			return 72
-		default:
-			return 90
-	}
-}
-module.exports = startUDP;
+module.exports = startQRS;
