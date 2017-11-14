@@ -2,6 +2,8 @@ var __ = require('lodash')
 const {playMidi, Series} =require('./playMidi')
 const BasePlayer = require('./basePlayer')
 const MelodyPlayer = require('./melodyPlayer')
+const JsonPlayer = require('./jsonPlayer')
+
 
 var REMOTEPORT = 12345;
 
@@ -17,8 +19,10 @@ var dgram = require('dgram');
 
 var message = new Buffer('My KungFu is Good!');
 
-global.basePlayer = new BasePlayer(0, 72)
-global.melodyPlayer = new MelodyPlayer(2, 80)
+// global.basePlayer = new BasePlayer(0, 72)
+// global.melodyPlayer = new MelodyPlayer(2, 80)
+global.basePlayer = new JsonPlayer(0, 72, "./scores/1112_voica_b_1.json")
+global.melodyPlayer = new JsonPlayer(2, 80, "./scores/1112_voica_a_1.json")
 
 let startQRS=function(callback){
 
@@ -55,11 +59,15 @@ let startQRS=function(callback){
 				// [channel, note, speed]
 				// 9x (144+x) note on, 8x (128+x) note off
 				// playMidi(clientId-1, Root, Kind, 100, 100)
+				// console.log(clientId)
 				switch(clientId){
 					case 0:
 						basePlayer.play()
 						break
 					case 2:
+						melodyPlayer.play()
+						break
+					case 3:
 						melodyPlayer.play()
 						break
 					default:

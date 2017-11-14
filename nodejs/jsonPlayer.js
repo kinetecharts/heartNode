@@ -25,6 +25,7 @@ class JsonPlayer{
     loadJson(fname){
         console.log('loading ', fname)
         this.data = JSON.parse(fs.readFileSync(fname), 'utf8')
+        this.noteIdx = 0
     }
     start(){
         this.playing=true
@@ -39,37 +40,19 @@ class JsonPlayer{
         this.playing = false
     }
     play(){
+        // console.log('play')
         this.noteIdx = this.noteIdx > this.data.length-1 ? 0 : this.noteIdx
-        let duration = parseInt(60*1000/(1.1*this.bpm)) //let note last 2/3 of heart beat
-        let third = parseInt(60*1000/this.bpm)/3
-        
-        // beat={begin:[], '1t': [], '2t': []}
-        let beat = this.data[this.noteIdx]
-        // console.log(beat)
-        if(beat==undefined) console.log(beat)
+        let notes = this.data[this.noteIdx].notes
+        let beats = this.data[this.noteIdx].beats
 
-        __.forEach(beat, (notes, timing)=>{
-            switch(timing){
-                case 'begin':
-                    __.forEach(notes, n=>{playMidiNote(this.id, n, this.v0, duration)})
-                break
-                case '1t':
-                    let notes1t = [...notes]
-                    // console.log('1t', notes1t)
-                    setTimeout(()=>{
-                        __.forEach(notes1t, n=>{playMidiNote(this.id, n, this.v1, third/1.1)})
-                    }, third)
-                break
-                case '2t':
-                    let notes2t = [...notes]
-                    // console.log('2t', notes2t)
-                    setTimeout(()=>{
-                        __.forEach(notes2t, n=>{playMidiNote(this.id, n, this.v1, third/1.1)})
-                    }, 2*third)
-                break
-                default:
-                    console.log(timing + " is not supported")
-            }
+        let duration = parseInt(60*1000/this.bpm) //let note last 2/3 of heart beat
+        let unit_time = duration / beats
+        
+        __.forEach(notes, note=>{
+            setTimeout(()=>{
+                playMidiNote(this.id, note.pitch, this.v1, note.dur*unit_time/1.1)
+            }, unit_time * note.pos)
+
         })
 
         this.noteIdx++

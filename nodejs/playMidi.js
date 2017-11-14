@@ -4,11 +4,18 @@ var midi = require('midi')
 global.output = new midi.output();
 var numPort = output.getPortCount();
 console.log("numPort " + numPort)
+__.range(0,numPort).forEach(i=>console.log(i, output.getPortName(i)))
+
 if(numPort<1){
 	console.log("!!! Please open MIDIMock or MIDIKey for sound")
 }
-output.getPortName(0)
-output.openPort(0)
+
+let port = __.filter(__.range(0,numPort), x=>output.getPortName(x)=='to Max 1')[0]
+if(port==undefined){
+    console.log("turn on max first")
+}
+console.log("out put to ", output.getPortName(port))
+output.openPort(port)
 
 // play a note
 // output.sendMessage([144, 60, 90])
