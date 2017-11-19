@@ -50,7 +50,7 @@ class JsonPlayer{
         
         __.forEach(notes, note=>{
             setTimeout(()=>{
-                playMidiNote(this.id, note.pitch, this.v1, note.dur*unit_time/1.1)
+                playMidiNote(this.id, note.pitch+this.shift, this.v0, note.dur*unit_time/1.1)
             }, unit_time * note.pos)
 
         })
